@@ -3,6 +3,7 @@ import AdminProviders from "@/components/admin/admin-providers";
 import { authOptions } from "@/lib/auth";
 import { ResponsiveAdminLayout } from "@/components/layout/responsive-admin-layout";
 import { prisma } from "@/lib/prisma";
+import { AdminLoginRedirect } from "@/components/admin/admin-login-redirect";
 
 async function getAdminUser() {
   try {
@@ -27,7 +28,7 @@ export default async function AdminLayout({
   }
 
   if (!admin) {
-    return <AdminProviders>{children}</AdminProviders>;
+    return <AdminLoginRedirect />;
   }
 
   return (

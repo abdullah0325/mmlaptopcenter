@@ -4,7 +4,9 @@ Date: 2026-07-18
 
 ## Outcome
 
-The application now has a complete OpenNext/Cloudflare configuration and builds successfully with Next.js and OpenNext. Cloudflare's first authoritative Linux upload measurement was **15,002.33 KiB raw / 3,399.54 KiB gzip**, 327.54 KiB above the Workers Free limit. A second optimization pass removed duplicated Zod video chunks, Swiper, and Framer Motion; the resulting OpenNext build passes locally and needs a Cloudflare rebuild for the authoritative post-optimization upload measurement.
+The application now has a complete OpenNext/Cloudflare configuration and builds successfully with Next.js and OpenNext. Cloudflare's first authoritative Linux upload measurement was **15,002.33 KiB raw / 3,399.54 KiB gzip**. After removing duplicated Zod video chunks, Swiper, and Framer Motion, Cloudflare measured **13,808.55 KiB raw / 3,176.32 KiB gzip**: a verified reduction of **223.22 KiB gzip**, leaving 104.32 KiB to remove.
+
+The latest pass removes the application middleware bundle while preserving authentication in the admin server layout and every admin API handler. The generated middleware manifest is empty, and the placeholder OpenNext middleware handler fell from Cloudflare's previous **486.90 KiB** module to **125.26 KiB raw** locally. A Cloudflare rebuild is required for the authoritative final compressed-upload measurement.
 
 OpenNext 1.20.1 generates malformed Prisma WASM import paths when Wrangler runs on native Windows (a backslash before `node_modules` is interpreted as a newline), so Cloudflare's Linux build remains the source of truth for final compressed size.
 
@@ -14,7 +16,8 @@ OpenNext 1.20.1 generates malformed Prisma WASM import paths when Wrangler runs 
 | --- | ---: | ---: |
 | OpenNext server handler | 2.40 MiB raw | 2.40 MiB raw / 0.50 MiB gzip |
 | Prisma runtime engines | More than 35 MiB raw (native engine plus MySQL, PostgreSQL, and SQLite WASM runtimes) | 4.00 MiB raw / 1.56 MiB gzip (two binary-free client WASM modules) |
-| Cloudflare upload | Not deployable | 3,399.54 KiB gzip before the second optimization pass; final measurement pending redeploy |
+| Cloudflare upload | 3,399.54 KiB gzip | 3,176.32 KiB gzip verified after pass two; final middleware-free measurement pending redeploy |
+| Middleware handler | 486.90 KiB raw | 125.26 KiB raw placeholder with an empty middleware manifest |
 
 The original project did not have the required `open-next.config.ts` or `wrangler.jsonc`, so no valid pre-optimization Wrangler compressed-upload number existed. The “before” value is the captured OpenNext handler plus traced Prisma engine files from the first successful OpenNext build, not an estimated Wrangler upload.
 
@@ -42,6 +45,7 @@ The following build-only packages were moved from production dependencies to dev
 - Dynamically imported product reviews with `next/dynamic`; the chatbot and product-card paths are also already dynamically imported.
 - Removed unused imports, state, helpers, a dead homepage database query, and unreachable chatbot cart code.
 - Replaced Swiper and Framer Motion with native CSS/scroll behavior and removed Zod from the shared video client graph.
+- Removed the standalone Next.js middleware graph. Admin pages remain protected by the server layout, unauthenticated client navigation is redirected by a minimal client boundary, and admin APIs retain their existing `requireAdmin` checks.
 - No public route, API route, image, or feature component was removed because none could be proven unused without changing the app's externally reachable behavior.
 
 ## Largest remaining Worker inputs
@@ -56,14 +60,15 @@ The following build-only packages were moved from production dependencies to dev
 
 ## Verification
 
-- `npx tsc --noEmit` passes.
+- Fresh production TypeScript validation passes. A pre-build `tsc` can reference stale generated route files after moving a route; the production build regenerates them.
 - `npm run build` passes, including TypeScript, page-data collection, and all 61 static-generation entries.
 - `npm run build:worker` completes and generates `.open-next/worker.js`.
 - All existing application and API routes remain in the final route manifest.
+- The generated middleware manifest contains no middleware or middleware functions.
 
 ## Additional recommendations
 
-1. Perform the final Wrangler dry run in WSL/Linux or Cloudflare CI. Native Windows is not fully supported by OpenNext and currently corrupts the generated Prisma WASM import paths.
+1. Rebuild in Cloudflare CI to capture the final compressed size. Native Windows is not fully supported by OpenNext and currently corrupts the generated Prisma WASM import paths during Wrangler's dry-run rebundle.
 2. If Wrangler reports more than 3 MiB gzip in Linux, upgrade from Prisma 6 to Prisma 7's `prisma-client` generator with `runtime = "cloudflare"`; test this as a separate migration because it is a major-version change.
 3. If more headroom is required, split admin and storefront route groups into separate Workers. This is an architectural deployment change and was not applied because it changes deployment topology.
 4. Replace broad icon packages only if a Linux bundle analysis shows they enter server output. Current server metadata shows Next.js and Prisma dominate; UI libraries are emitted primarily as static client assets and do not materially affect the Worker limit.
