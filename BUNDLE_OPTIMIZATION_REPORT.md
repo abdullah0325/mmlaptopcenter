@@ -4,9 +4,9 @@ Date: 2026-07-18
 
 ## Outcome
 
-The application now has a complete OpenNext/Cloudflare configuration and builds successfully with Next.js and OpenNext. The directly measurable Worker server payload is **6.40 MiB uncompressed / 2.06 MiB gzip**, below the Cloudflare Workers Free compressed limit of 3 MiB.
+The application now has a complete OpenNext/Cloudflare configuration and builds successfully with Next.js and OpenNext. Cloudflare's first authoritative Linux upload measurement was **15,002.33 KiB raw / 3,399.54 KiB gzip**, 327.54 KiB above the Workers Free limit. A second optimization pass removed duplicated Zod video chunks, Swiper, and Framer Motion; the resulting OpenNext build passes locally and needs a Cloudflare rebuild for the authoritative post-optimization upload measurement.
 
-OpenNext 1.20.1 generates malformed Prisma WASM import paths when Wrangler runs on native Windows (a backslash before `node_modules` is interpreted as a newline). Because that adapter issue prevents Wrangler's final native-Windows dry run, 2.06 MiB is the sum of level-9 gzip measurements for the generated server handler and its two required Prisma WASM modules. Run `npm run build:worker` followed by `npx wrangler deploy --dry-run` in WSL/Linux or CI to confirm Wrangler's final upload figure.
+OpenNext 1.20.1 generates malformed Prisma WASM import paths when Wrangler runs on native Windows (a backslash before `node_modules` is interpreted as a newline), so Cloudflare's Linux build remains the source of truth for final compressed size.
 
 ## Size before and after
 
@@ -14,7 +14,7 @@ OpenNext 1.20.1 generates malformed Prisma WASM import paths when Wrangler runs 
 | --- | ---: | ---: |
 | OpenNext server handler | 2.40 MiB raw | 2.40 MiB raw / 0.50 MiB gzip |
 | Prisma runtime engines | More than 35 MiB raw (native engine plus MySQL, PostgreSQL, and SQLite WASM runtimes) | 4.00 MiB raw / 1.56 MiB gzip (two binary-free client WASM modules) |
-| Measured server payload | More than 37 MiB raw | 6.40 MiB raw / 2.06 MiB gzip |
+| Cloudflare upload | Not deployable | 3,399.54 KiB gzip before the second optimization pass; final measurement pending redeploy |
 
 The original project did not have the required `open-next.config.ts` or `wrangler.jsonc`, so no valid pre-optimization Wrangler compressed-upload number existed. The “before” value is the captured OpenNext handler plus traced Prisma engine files from the first successful OpenNext build, not an estimated Wrangler upload.
 
@@ -25,6 +25,8 @@ The original project did not have the required `open-next.config.ts` or `wrangle
 - `nextjs-toploader` — no imports.
 - `openai` — no SDK imports; the existing lightweight chat HTTP implementation remains.
 - `recharts` — no imports.
+- `swiper` — replaced with a native scroll-snap carousel retaining autoplay and navigation.
+- `framer-motion` — replaced with CSS animations and transitions at all five call sites.
 
 The following build-only packages were moved from production dependencies to dev dependencies: `prisma`, `sharp`, and `@types/nodemailer`.
 
@@ -34,11 +36,12 @@ The following build-only packages were moved from production dependencies to dev
 
 - Added standard OpenNext and Wrangler configuration, Worker build/preview/deploy scripts, and ignored generated `.open-next` artifacts.
 - Kept Prisma out of all browser graphs by retaining `server-only` and converting client-callable database services into Server Actions.
-- Configured OpenNext-recommended Prisma externals and enabled package import optimization for `framer-motion`, `react-icons`, and `swiper`.
+- Configured OpenNext-recommended Prisma externals and enabled package import optimization for `react-icons`.
 - Replaced Prisma's native query engine with `engineType = "client"` and the Neon driver adapter.
 - Removed duplicate/deprecated `images.domains` configuration.
 - Dynamically imported product reviews with `next/dynamic`; the chatbot and product-card paths are also already dynamically imported.
 - Removed unused imports, state, helpers, a dead homepage database query, and unreachable chatbot cart code.
+- Replaced Swiper and Framer Motion with native CSS/scroll behavior and removed Zod from the shared video client graph.
 - No public route, API route, image, or feature component was removed because none could be proven unused without changing the app's externally reachable behavior.
 
 ## Largest remaining Worker inputs
