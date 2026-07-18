@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import Head from "next/head";
-import { motion } from "framer-motion";
 import { Button } from "@esmate/shadcn/components/ui/button";
 import {
   Card,
@@ -44,12 +43,7 @@ export default function NotFound() {
       <div className="relative mb-10 mt-10 min-h-screen bg-[#fcf5e8] overflow-hidden flex items-center justify-center px-4">
         <div className="absolute inset-0 flex items-center justify-center"></div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="relative w-full max-w-xl"
-        >
+        <div className="relative w-full max-w-xl animate-[fade-up_500ms_ease-out]">
           <Card className="bg-white/90 mb-2 border border-[#d8a928]/40 rounded-2xl">
             <CardHeader className="pt-10 px-6 sm:px-10 text-center space-y-6">
               <div className="mx-auto flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-full bg-[#fcf5e8] shadow-inner">
@@ -89,7 +83,7 @@ export default function NotFound() {
               </Button>
             </CardFooter>
           </Card>
-        </motion.div>
+        </div>
       </div>
     </>
   );

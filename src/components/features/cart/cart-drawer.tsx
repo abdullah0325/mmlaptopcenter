@@ -14,7 +14,6 @@ import { Button } from "@esmate/shadcn/components/ui/button";
 import { Separator } from "@esmate/shadcn/components/ui/separator";
 import { Badge } from "@esmate/shadcn/components/ui/badge";
 import { ShoppingBag, X, Minus, Plus, Trash2, ArrowRight } from "@esmate/shadcn/pkgs/lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface CartDrawerProps {
   open: boolean;
@@ -26,22 +25,15 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const isCartEmpty = (cart?.totalQuantity ?? 0) === 0;
 
   return (
-    <AnimatePresence>
+    <>
       {open && (
         <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+          <div
+            className="fixed inset-0 z-50 animate-[fade-in_180ms_ease-out] bg-black/40 backdrop-blur-sm"
             onClick={() => onOpenChange(false)}
           />
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 z-[60] flex h-full w-[85%] max-w-xs flex-col border-l border-[#d8a928]/20 bg-white/95 shadow-xl sm:w-full sm:max-w-md"
+          <div
+            className="fixed right-0 top-0 z-[60] flex h-full w-[85%] max-w-xs animate-[slide-in-right_240ms_ease-out] flex-col border-l border-[#d8a928]/20 bg-white/95 shadow-xl sm:w-full sm:max-w-md"
           >
              <div className="flex items-center justify-between border-b border-[#d8a928]/15 bg-gradient-to-r from-[#fcf5e8]/80 to-white/80 px-3 py-3 backdrop-blur-sm sm:px-5 sm:py-4">
                <div className="flex items-center gap-2">
@@ -81,10 +73,8 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                  <div className="space-y-3 sm:space-y-5 pb-2">
                    {cart.lines?.map((line, index) => (
                     <CartLineProvider key={line?.id} line={line!}>
-                         <motion.div 
-                           initial={{ opacity: 0, y: 10 }}
-                           animate={{ opacity: 1, y: 0 }}
-                           transition={{ delay: index * 0.05 }}
+                         <div
+                           style={{ animationDelay: `${index * 50}ms` }}
                            className="space-y-2 sm:space-y-4"
                          >
                         <div className="flex items-start gap-2 sm:gap-3">
@@ -155,7 +145,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                         </div>
 
                          <Separator className="bg-gradient-to-r from-[#d8a928]/15 via-[#d8a928]/5 to-transparent my-1 sm:my-0" />
-                      </motion.div>
+                      </div>
                     </CartLineProvider>
                   ))}
                 </div>
@@ -195,9 +185,9 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                  </div>
               </div>
             )}
-          </motion.div>
+          </div>
         </>
       )}
-    </AnimatePresence>
+    </>
   );
 }

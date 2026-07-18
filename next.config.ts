@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   serverExternalPackages: ["@prisma/client", ".prisma/client"],
   experimental: {
-    optimizePackageImports: ["framer-motion", "react-icons", "swiper"],
+    optimizePackageImports: ["react-icons"],
   },
   images: {
     remotePatterns: [

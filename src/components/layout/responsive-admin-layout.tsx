@@ -3,7 +3,6 @@
 import { useState, createContext, useContext } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   FiGrid,
   FiPackage,
@@ -101,9 +100,7 @@ function AdminSidebar({ admin, onClose, isMobile = false }: { admin: any; onClos
           }} 
         />
       )}
-      <motion.aside
-        initial={isMobile ? { x: -280 } : false}
-        animate={{ x: 0 }}
+      <aside
         className={isMobile 
           ? "fixed left-0 top-0 z-50 h-screen w-64 bg-[#1a1308] text-white"
           : "h-full w-64 bg-[#1a1308] text-white"
@@ -173,7 +170,7 @@ function AdminSidebar({ admin, onClose, isMobile = false }: { admin: any; onClos
             </Link>
           </div>
         </div>
-      </motion.aside>
+      </aside>
     </>
   );
 }
@@ -219,25 +216,20 @@ export function AdminMobileHeader({ admin }: { admin: any }) {
         </Link>
       </header>
 
-      <AnimatePresence>
+      <>
         {isMenuOpen && (
           <>
             <div
               className="fixed inset-0 z-40 bg-black/50 md:hidden"
               onClick={() => setIsMenuOpen(false)}
             />
-            <motion.div
-              initial={{ x: -280 }}
-              animate={{ x: 0 }}
-              exit={{ x: -280 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed left-0 top-0 z-50 h-screen w-64 bg-[#1a1308] text-white"
+            <div className="fixed left-0 top-0 z-50 h-screen w-64 animate-[slide-in-left_240ms_ease-out] bg-[#1a1308] text-white"
             >
               <AdminSidebar admin={admin} onClose={() => setIsMenuOpen(false)} isMobile={true} />
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
+      </>
     </>
   );
 }

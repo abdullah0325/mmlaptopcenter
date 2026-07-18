@@ -1,11 +1,7 @@
 "use client";
 
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef } from "react";
-
-import "swiper/css";
+import { useEffect, useRef } from "react";
 
 const testimonials = [
   {
@@ -51,33 +47,47 @@ const testimonials = [
 ];
 
 const Testimonials = () => {
-  const swiperRef = useRef<any>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const move = (direction: 1 | -1) => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    const firstCard = carousel.firstElementChild as HTMLElement | null;
+    const distance = (firstCard?.offsetWidth ?? carousel.clientWidth) + 24;
+    const reachedEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 4;
+    const reachedStart = carousel.scrollLeft <= 4;
+
+    if (direction === 1 && reachedEnd) {
+      carousel.scrollTo({ left: 0, behavior: "smooth" });
+    } else if (direction === -1 && reachedStart) {
+      carousel.scrollTo({ left: carousel.scrollWidth, behavior: "smooth" });
+    } else {
+      carousel.scrollBy({ left: distance * direction, behavior: "smooth" });
+    }
+  };
+
+  useEffect(() => {
+    const timer = window.setInterval(() => move(1), 4000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   return (
     
     <div className="relative">
       <button
-        onClick={() => swiperRef.current?.slidePrev()}
+        onClick={() => move(-1)}
         className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[#fcf5e8] p-2 shadow-md hover:bg-[#f6a45d] hover:text-white transition hidden md:block"
         aria-label="Previous"
       >
         <ChevronLeft className="h-5 w-5" />
       </button>
 
-      <Swiper
-        onSwiper={(swiper) => { swiperRef.current = swiper; }}
-        modules={[Autoplay]}
-        spaceBetween={24}
-        slidesPerView={1}
-        autoplay={{ delay: 4000, disableOnInteraction: false }}
-        breakpoints={{
-          640: { slidesPerView: 2 },
-          1024: { slidesPerView: 3 },
-        }}
-        className="px-8"
+      <div
+        ref={carouselRef}
+        className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {testimonials.map((t, i) => (
-          <SwiperSlide key={i}>
+          <article key={i} className="min-w-full snap-start sm:min-w-[calc(50%-12px)] lg:min-w-[calc(33.333%-16px)]">
             <div className="rounded-xl border border-[#d8a928]/20 bg-[#f4f1e8] p-6 h-full">
               <div className="flex gap-1 mb-3">
                 {Array.from({ length: 5 }).map((_, j) => (
@@ -88,12 +98,12 @@ const Testimonials = () => {
               <p className="font-semibold text-[#0a0a0a]">{t.name}</p>
               <p className="text-xs text-[#5A5E55]">{t.role}</p>
             </div>
-          </SwiperSlide>
+          </article>
         ))}
-      </Swiper>
+      </div>
 
       <button
-        onClick={() => swiperRef.current?.slideNext()}
+        onClick={() => move(1)}
         className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[#fcf5e8] p-2 shadow-md hover:bg-[#f6a45d] hover:text-white transition hidden md:block"
         aria-label="Next"
       >

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Laptop, ShieldCheck, Truck } from "@esmate/shadcn/pkgs/lucide-react";
 
 const infoCards = [
@@ -112,24 +111,18 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
         className="flex w-full items-start justify-between py-6 text-left"
       >
         <span className="pl-4 text-base font-semibold text-foreground">{question}</span>
-        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+        <div className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>
           <ChevronDown className="mr-4 h-5 w-5 text-muted-foreground" />
-        </motion.div>
+        </div>
       </button>
 
-      <AnimatePresence initial={false}>
+      <>
         {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden"
-          >
+          <div className="overflow-hidden animate-[fade-in_250ms_ease-out]">
             <p className="px-8 pb-6 text-muted-foreground">{answer}</p>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

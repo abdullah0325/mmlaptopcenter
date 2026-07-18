@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -77,15 +76,7 @@ export function CertificationsSlider({ initialData }: CertificationsSliderProps)
         <div className="absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-[#fcf5e8] to-transparent" />
         <div className="absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-[#fcf5e8] to-transparent" />
 
-        <motion.div
-          className="flex w-max gap-14"
-          animate={{ x: "-50%" }}
-          transition={{
-            repeat: Infinity,
-            duration: 30,
-            ease: "linear",
-          }}
-        >
+        <div className="flex w-max animate-[certification-marquee_30s_linear_infinite] gap-14">
           {[...displayCerts, ...displayCerts].map((cert, index) => (
             <div
               key={index}
@@ -106,7 +97,7 @@ export function CertificationsSlider({ initialData }: CertificationsSliderProps)
               </span>
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

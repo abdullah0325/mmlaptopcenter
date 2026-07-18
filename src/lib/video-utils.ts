@@ -1,4 +1,3 @@
-import { z } from "zod";
 import type { Video } from "@prisma/client";
 
 export const VIDEO_PLATFORMS = ["YOUTUBE", "TIKTOK", "FACEBOOK", "INSTAGRAM"] as const;
@@ -34,25 +33,86 @@ export const VIDEO_FORMAT_LABELS: Record<VideoFormatValue, string> = {
   VERTICAL: "Vertical / Reel / Short",
 };
 
-export const videoSchema = z.object({
-  title: z.string().trim().min(1, "Title is required"),
-  description: z.string().trim().optional().nullable(),
-  thumbnail: z.string().trim().optional().nullable(),
-  videoUrl: z.string().trim().url("Enter a valid video URL"),
-  // Kept in the payload for backwards compatibility. The URL is the source of truth.
-  platform: z.enum(VIDEO_PLATFORMS).optional(),
-  placement: z.enum(VIDEO_PLACEMENTS).default("VIDEOS_PAGE"),
-  format: z.enum(VIDEO_FORMATS).default("LANDSCAPE"),
-  buttonText: z.string().trim().optional().nullable(),
-  buttonUrl: z.string().trim().optional().nullable(),
-  featured: z.boolean().default(false),
-  active: z.boolean().default(true),
-  displayOrder: z.coerce.number().int().default(0),
-  seoTitle: z.string().trim().optional().nullable(),
-  seoDescription: z.string().trim().optional().nullable(),
-});
+export type VideoFormPayload = {
+  title: string;
+  description?: string | null;
+  thumbnail?: string | null;
+  videoUrl: string;
+  platform?: VideoPlatformValue;
+  placement: VideoPlacementValue;
+  format: VideoFormatValue;
+  buttonText?: string | null;
+  buttonUrl?: string | null;
+  featured: boolean;
+  active: boolean;
+  displayOrder: number;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+};
 
-export type VideoFormPayload = z.infer<typeof videoSchema>;
+function optionalString(value: unknown, field: string) {
+  if (value == null) return null;
+  if (typeof value !== "string") throw new VideoUrlError(`${field} must be a string`);
+  return value.trim();
+}
+
+function enumValue<T extends readonly string[]>(
+  value: unknown,
+  allowed: T,
+  fallback: T[number],
+  field: string,
+): T[number] {
+  if (value == null) return fallback;
+  if (typeof value !== "string" || !allowed.includes(value)) {
+    throw new VideoUrlError(`Invalid ${field}`);
+  }
+  return value as T[number];
+}
+
+function parseVideoInput(input: unknown): VideoFormPayload {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new VideoUrlError("Invalid video data");
+  }
+
+  const value = input as Record<string, unknown>;
+  const title = optionalString(value.title, "Title");
+  if (!title) throw new VideoUrlError("Title is required");
+
+  const videoUrl = optionalString(value.videoUrl, "Video URL");
+  if (!videoUrl || !safeUrl(videoUrl)) {
+    throw new VideoUrlError("Enter a valid video URL");
+  }
+
+  if (value.platform != null && !VIDEO_PLATFORMS.includes(value.platform as VideoPlatformValue)) {
+    throw new VideoUrlError("Invalid platform");
+  }
+
+  const displayOrder = value.displayOrder == null ? 0 : Number(value.displayOrder);
+  if (!Number.isInteger(displayOrder)) throw new VideoUrlError("Display order must be an integer");
+  if (value.featured != null && typeof value.featured !== "boolean") {
+    throw new VideoUrlError("Featured must be a boolean");
+  }
+  if (value.active != null && typeof value.active !== "boolean") {
+    throw new VideoUrlError("Active must be a boolean");
+  }
+
+  return {
+    title,
+    description: optionalString(value.description, "Description"),
+    thumbnail: optionalString(value.thumbnail, "Thumbnail"),
+    videoUrl,
+    platform: value.platform as VideoPlatformValue | undefined,
+    placement: enumValue(value.placement, VIDEO_PLACEMENTS, "VIDEOS_PAGE", "placement"),
+    format: enumValue(value.format, VIDEO_FORMATS, "LANDSCAPE", "format"),
+    buttonText: optionalString(value.buttonText, "Button text"),
+    buttonUrl: optionalString(value.buttonUrl, "Button URL"),
+    featured: value.featured === true,
+    active: value.active !== false,
+    displayOrder,
+    seoTitle: optionalString(value.seoTitle, "SEO title"),
+    seoDescription: optionalString(value.seoDescription, "SEO description"),
+  };
+}
 
 export type PublicVideo = {
   id: string;
@@ -154,7 +214,7 @@ async function resolveTikTokUrl(videoUrl: string) {
 }
 
 export async function prepareVideoData(input: unknown) {
-  const validated = videoSchema.parse(input);
+  const validated = parseVideoInput(input);
   const platform = detectVideoPlatform(validated.videoUrl);
   if (!platform) throw new VideoUrlError("Unsupported video URL. Use a YouTube, TikTok, Facebook, or Instagram URL.");
 
