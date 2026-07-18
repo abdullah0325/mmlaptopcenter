@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@source "../../node_modules/@esmate/shadcn";
+@import "@esmate/shadcn/styles/new-york.css";
+
+@theme {
+  --color-primary: hsl(28, 90%, 66%);
+  /* MM Laptop Center Orange */
+  --color-primary-foreground: hsl(0, 0%, 100%);
+  --color-secondary: hsl(40, 60%, 96%);
+  /* Warm gold-cream background */
+  --color-secondary-foreground: hsl(0, 0%, 4%);
+  --color-muted: hsl(40, 40%, 94%);
+  --color-muted-foreground: hsl(0, 0%, 35%);
+  --color-accent: hsl(45, 70%, 50%);
+  /* Gold accent */
+  --color-accent-foreground: hsl(0, 0%, 4%);
+}
+
+:root {
+  --primary: 28 90% 66%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 40 60% 96%;
+  --secondary-foreground: 0 0% 4%;
+  --muted: 40 40% 94%;
+  --muted-foreground: 0 0% 35%;
+  --accent: 45 70% 50%;
+  --accent-foreground: 0 0% 4%;
+  --background: 40 55% 97%;
+  --foreground: 0 0% 4%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 4%;
+  --border: 45 70% 50%;
+  --input: 40 40% 92%;
+  --ring: 28 90% 66%;
+  --radius: 0.75rem;
+}
+
+/* Keep storefront content comfortably wide on desktop while preserving the
+   narrower reading widths used for text-heavy sections. */
+@media (min-width: 1280px) {
+  .public-site .max-w-7xl {
+    max-width: 96rem;
+    width: calc(100% - 2rem);
+  }
+
+  .public-site .storefront-categories {
+    width: calc(100% - 0.5rem);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  display: flex;
+  width: calc(200%);
+  animation: scroll-left 10s linear infinite;
+}
+
+@media (max-width: 768px) {
+  .animate-scroll {
+    animation-duration: 6s;
+  }
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes kenburns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.12); }
+}
+
+.animate-kenburns {
+  animation: kenburns 7s ease-out forwards;
+}

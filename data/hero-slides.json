@@ -1,0 +1,62 @@
+[
+  {
+    "id": "slide-1",
+    "imageUrl": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=2070&auto=format&fit=crop",
+    "imageAlt": "Premium laptop on a desk",
+    "eyebrow": "Your Trusted Tech Destination",
+    "title": "Premium Laptops",
+    "titleHighlight": "& Tech",
+    "description": "Discover the latest gaming laptops, business ultrabooks, and budget-friendly machines — all backed by genuine warranty.",
+    "ctaPrimaryLabel": "Shop Now",
+    "ctaPrimaryHref": "/products",
+    "ctaSecondaryLabel": "View Deals",
+    "ctaSecondaryHref": "/collections/hot-deals",
+    "isActive": true,
+    "order": 1
+  },
+  {
+    "id": "slide-2",
+    "imageUrl": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=1974&auto=format&fit=crop",
+    "imageAlt": "Gaming laptop with RGB keyboard",
+    "eyebrow": "Gaming Laptops",
+    "title": "Dominate",
+    "titleHighlight": "Every Game",
+    "description": "High-refresh displays, the latest NVIDIA GPUs, and powerful processors — built for gamers who demand the best.",
+    "ctaPrimaryLabel": "Shop Gaming",
+    "ctaPrimaryHref": "/collections/gaming",
+    "ctaSecondaryLabel": "Compare Specs",
+    "ctaSecondaryHref": "/compare",
+    "isActive": true,
+    "order": 2
+  },
+  {
+    "id": "slide-3",
+    "imageUrl": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=2070&auto=format&fit=crop",
+    "imageAlt": "Person working on an ultrabook in a cafe",
+    "eyebrow": "Business & Ultrabooks",
+    "title": "Work Smarter,",
+    "titleHighlight": "Anywhere",
+    "description": "Lightweight, all-day battery laptops designed for professionals who need reliability on the go.",
+    "ctaPrimaryLabel": "Shop Business",
+    "ctaPrimaryHref": "/collections/business",
+    "ctaSecondaryLabel": "Talk to an Expert",
+    "ctaSecondaryHref": "/contact",
+    "isActive": true,
+    "order": 3
+  },
+  {
+    "id": "slide-4",
+    "imageUrl": "https://images.unsplash.com/photo-1547082299-de196ea013d6?q=80&w=2070&auto=format&fit=crop",
+    "imageAlt": "Laptop accessories and peripherals on a desk",
+    "eyebrow": "Hot Deals",
+    "title": "Accessories",
+    "titleHighlight": "& Peripherals",
+    "description": "Monitors, keyboards, mice, bags, and more — everything you need to upgrade your laptop setup.",
+    "ctaPrimaryLabel": "Browse Accessories",
+    "ctaPrimaryHref": "/collections/accessories",
+    "ctaSecondaryLabel": "View Deals",
+    "ctaSecondaryHref": "/collections/hot-deals",
+    "isActive": true,
+    "order": 4
+  }
+]

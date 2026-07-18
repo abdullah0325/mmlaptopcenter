@@ -1,0 +1,28 @@
+ALTER TABLE "Product"
+ADD COLUMN "color" TEXT,
+ADD COLUMN "size" TEXT,
+ADD COLUMN "storage" TEXT,
+ADD COLUMN "ram" TEXT,
+ADD COLUMN "processor" TEXT,
+ADD COLUMN "condition" TEXT,
+ADD COLUMN "specifications" JSONB NOT NULL DEFAULT '{}',
+ADD COLUMN "customAttributes" JSONB NOT NULL DEFAULT '{}';
+
+ALTER TABLE "ProductVariation"
+ADD COLUMN "description" TEXT,
+ADD COLUMN "compareAtPrice" DOUBLE PRECISION,
+ADD COLUMN "sku" TEXT,
+ADD COLUMN "stock" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN "images" JSONB NOT NULL DEFAULT '[]',
+ADD COLUMN "color" TEXT,
+ADD COLUMN "size" TEXT,
+ADD COLUMN "storage" TEXT,
+ADD COLUMN "ram" TEXT,
+ADD COLUMN "processor" TEXT,
+ADD COLUMN "condition" TEXT,
+ADD COLUMN "specifications" JSONB NOT NULL DEFAULT '{}',
+ADD COLUMN "customAttributes" JSONB NOT NULL DEFAULT '{}',
+ADD COLUMN "active" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN "isDefault" BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE "ProductVariation" ALTER COLUMN "value" SET DEFAULT '';

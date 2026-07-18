@@ -1,0 +1,47 @@
+{
+  "name": "MM Laptop Center",
+  "short_name": "MM Laptop",
+  "description": "MM Laptop Center – Shop premium laptops, gaming gear and accessories",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fcf5e8",
+  "theme_color": "#d8a928",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["shopping", "technology"],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Shop Laptops",
+      "short_name": "Shop",
+      "description": "Browse our laptops",
+      "url": "/products"
+    },
+    {
+      "name": "My Cart",
+      "short_name": "Cart",
+      "description": "View your cart",
+      "url": "/cart"
+    }
+  ]
+}
