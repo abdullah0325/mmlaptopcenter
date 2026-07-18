@@ -1,5 +1,5 @@
 {
-  "name": "mmlaptop-center",
+  "name": "mmlaptopcenter",
   "version": "4.0.0",
   "description": "MM Laptop Center – A full-stack laptop e-commerce store built with Next.js, Prisma, NextAuth, and Cloudinary.",
   "license": "MIT",
