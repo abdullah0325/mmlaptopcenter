@@ -6,7 +6,8 @@
   "scripts": {
     "start": "next start",
     "dev": "esmate task dev",
-    "build": "esmate task build",
+    "build": "opennextjs-cloudflare build",
+    "build:next": "esmate task build",
     "build:worker": "opennextjs-cloudflare build",
     "preview:worker": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:worker": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
