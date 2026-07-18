@@ -1,4 +1,6 @@
 
+"use server";
+
 import {
   getCollection as getCollectionFromDb,
   getCollectionProducts as getCollectionProductsFromDb,

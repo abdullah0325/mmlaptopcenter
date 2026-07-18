@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 
@@ -398,13 +397,17 @@ export async function POST(request: Request) {
         .join("\n");
     }
 
-    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-    const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 0.55,
-      max_tokens: 250,
-      messages: [
+    const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        temperature: 0.55,
+        max_tokens: 250,
+        messages: [
         { role: "system", content: SYSTEM_PROMPT },
         ...(productContext
           ? [
@@ -416,11 +419,19 @@ export async function POST(request: Request) {
           : []),
         ...(body.history || []).slice(-6).map((m) => ({ role: m.role, content: m.content })),
         { role: "user", content: text },
-      ],
+        ],
+      }),
     });
+    const completion = await openAiResponse.json() as {
+      choices?: Array<{ message?: { content?: string } }>;
+      error?: { message?: string };
+    };
+    if (!openAiResponse.ok) {
+      throw new Error(completion.error?.message || "OpenAI request failed");
+    }
 
     const aiHtml =
-      completion.choices[0]?.message?.content?.trim() ||
+      completion.choices?.[0]?.message?.content?.trim() ||
       `<p style="font-size:14px; color:${C.muted}; margin:0;">How can I help you today? 😊</p>`;
 
     const aiWantsProducts =

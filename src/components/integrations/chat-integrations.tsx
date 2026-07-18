@@ -3,14 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Script from "next/script";
+import dynamic from "next/dynamic";
 import { FaWhatsapp } from "react-icons/fa";
 import { ChatButton } from "@/components/chatbot/chat-button";
-import { ChatPopup } from "@/components/chatbot/chat-popup";
 import { contact as trackContact } from "@/lib/pixel";
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
 const TAWK_ID = process.env.NEXT_PUBLIC_TAWK_ID;
 const TAWK_WIDGET_ID = process.env.NEXT_PUBLIC_TAWK_WIDGET_ID;
+const ChatPopup = dynamic(
+  () => import("@/components/chatbot/chat-popup").then((module) => module.ChatPopup),
+  { ssr: false }
+);
 
 
 export function ChatIntegrations() {

@@ -1,3 +1,5 @@
+"use server";
+
 import { getProduct } from "@/lib/storefront";
 import { invariant } from "@esmate/utils";
 import { prisma } from "@/lib/prisma";

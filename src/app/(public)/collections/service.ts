@@ -1,4 +1,6 @@
 
+"use server";
+
 import { getAllCollections } from "@/lib/storefront";
 import { invariant } from "@esmate/utils";
 

@@ -1,10 +1,34 @@
-import { v2 as cloudinary } from "cloudinary";
+import "server-only";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+function getConfig() {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error("Cloudinary credentials are not configured");
+  }
+
+  return { cloudName, apiKey, apiSecret };
+}
+
+async function sha1(value: string) {
+  const bytes = new TextEncoder().encode(value);
+  const hash = await crypto.subtle.digest("SHA-1", bytes);
+  return Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function signedFields(fields: Record<string, string>) {
+  const { apiKey, apiSecret } = getConfig();
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const values = { ...fields, timestamp };
+  const payload = Object.entries(values)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return { ...values, api_key: apiKey, signature: await sha1(payload + apiSecret) };
+}
 
 export interface UploadResult {
   url: string;
@@ -19,95 +43,43 @@ export async function uploadImage(
   file: string | Buffer,
   folder: string = "mmlaptop-center"
 ): Promise<UploadResult> {
-  return new Promise((resolve, reject) => {
-    const uploadOptions = {
-      folder,
-      resource_type: "image" as const,
-      transformation: [
-        { quality: "auto", fetch_format: "auto" },
-      ],
-    };
+  if (!(typeof file === "string" && file.startsWith("data:")) && !Buffer.isBuffer(file)) {
+    throw new Error("Invalid file format");
+  }
 
-    if (typeof file === "string" && file.startsWith("data:")) {
-      cloudinary.uploader.upload(file, uploadOptions, (error, result) => {
-        if (error) reject(error);
-        else if (result) {
-          resolve({
-            url: result.secure_url,
-            publicId: result.public_id,
-            width: result.width,
-            height: result.height,
-            format: result.format,
-            bytes: result.bytes,
-          });
-        }
-      });
-    } else if (Buffer.isBuffer(file)) {
-      cloudinary.uploader.upload_stream(uploadOptions, (error, result) => {
-        if (error) reject(error);
-        else if (result) {
-          resolve({
-            url: result.secure_url,
-            publicId: result.public_id,
-            width: result.width,
-            height: result.height,
-            format: result.format,
-            bytes: result.bytes,
-          });
-        }
-      }).end(file);
-    } else {
-      reject(new Error("Invalid file format"));
-    }
+  const { cloudName } = getConfig();
+  const form = new FormData();
+  const fields = await signedFields({ folder });
+  Object.entries(fields).forEach(([key, value]) => form.set(key, value));
+  form.set("file", typeof file === "string" ? file : new Blob([new Uint8Array(file)]));
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    method: "POST",
+    body: form,
   });
-}
+  const result = await response.json() as Record<string, any>;
+  if (!response.ok) throw new Error(result.error?.message || "Cloudinary upload failed");
 
-export async function uploadMultipleImages(
-  files: (string | Buffer)[],
-  folder: string = "mmlaptop-center"
-): Promise<UploadResult[]> {
-  return Promise.all(files.map((file) => uploadImage(file, folder)));
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+    width: result.width,
+    height: result.height,
+    format: result.format,
+    bytes: result.bytes,
+  };
 }
 
 export async function deleteImage(publicId: string): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader.destroy(publicId, (error, result) => {
-      if (error) reject(error);
-      else resolve(result.result === "ok");
-    });
+  const { cloudName } = getConfig();
+  const form = new FormData();
+  const fields = await signedFields({ public_id: publicId });
+  Object.entries(fields).forEach(([key, value]) => form.set(key, value));
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`, {
+    method: "POST",
+    body: form,
   });
+  const result = await response.json() as { result?: string; error?: { message?: string } };
+  if (!response.ok) throw new Error(result.error?.message || "Cloudinary delete failed");
+  return result.result === "ok";
 }
-
-export function getOptimizedUrl(
-  publicId: string,
-  options: {
-    width?: number;
-    height?: number;
-    crop?: string;
-    quality?: string;
-    format?: string;
-  } = {}
-): string {
-  const {
-    width,
-    height,
-    crop = "fill",
-    quality = "auto",
-    format = "auto",
-  } = options;
-
-  return cloudinary.url(publicId, {
-    width,
-    height,
-    crop,
-    quality,
-    format,
-    secure: true,
-  });
-}
-
-export function getThumbnailUrl(publicId: string, size: number = 300): string {
-  return getOptimizedUrl(publicId, { width: size, height: size, crop: "thumb" });
-}
-
-export { cloudinary };

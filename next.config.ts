@@ -3,9 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   devIndicators: false,
-  serverExternalPackages: ["dompurify"],
+  serverExternalPackages: ["@prisma/client", ".prisma/client"],
+  experimental: {
+    optimizePackageImports: ["framer-motion", "react-icons", "swiper"],
+  },
   images: {
-    domains: ["placehold.co", "res.cloudinary.com", "i.pinimg.com", "images.unsplash.com", "i.ytimg.com"],
     remotePatterns: [
       {
         protocol: "https",
@@ -71,3 +73,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+initOpenNextCloudflareForDev();
