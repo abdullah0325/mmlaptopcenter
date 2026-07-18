@@ -54,7 +54,6 @@ export function StoreProductCard({
   featuredImageUrl,
   price,
   compareAtPrice,
-  tag,
   rating,
   colors = [],
   extraColorCount = 0,
