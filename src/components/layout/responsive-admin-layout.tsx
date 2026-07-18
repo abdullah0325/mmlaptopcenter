@@ -17,8 +17,6 @@ import {
   FiLogOut,
   FiMenu,
   FiX,
-  FiCheckCircle,
-  FiList,
   FiHome,
   FiVideo,
 } from "react-icons/fi";
@@ -37,16 +35,6 @@ const AdminNavContext = createContext<AdminNavContextType>({
 
 export function useAdminNav() {
   return useContext(AdminNavContext);
-}
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  if (typeof window !== "undefined") {
-    setIsMobile(window.innerWidth < 768);
-  }
-
-  return isMobile;
 }
 
 const navItems = [
@@ -269,7 +257,7 @@ export function ResponsiveAdminLayout({
       
       <div className="md:ml-64">
         <div className="hidden md:block sticky top-0 z-30">
-          <AdminTopbarSimple admin={admin} />
+          <AdminTopbarSimple />
         </div>
         
         <AdminMobileHeader admin={admin} />
@@ -284,7 +272,7 @@ export function ResponsiveAdminLayout({
   );
 }
 
-function AdminTopbarSimple({ admin }: { admin: any }) {
+function AdminTopbarSimple() {
   return (
     <header className="flex h-16 items-center justify-between gap-4 border-b border-[#d8a928]/20 bg-[#fcf5e8]/80 px-6 backdrop-blur">
       <div className="min-w-0">

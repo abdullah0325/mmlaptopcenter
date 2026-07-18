@@ -30,7 +30,6 @@ interface ReviewStats {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const FALLBACK_IMAGE = "/logo/mmlaptop.png";
-const DEFAULT_RATING = 4.7;
 
 function discountPercent(compare: string, current: string): number | null {
   const c = parseFloat(compare);
@@ -45,17 +44,6 @@ function formatPrice(amount: string) {
 }
 
 // ─── Star Rating ─────────────────────────────────────────────────────────────
-
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <div className="flex items-center gap-1">
-      <span className="text-yellow-400 text-sm leading-none">★</span>
-      <span className="text-xs font-semibold text-[#0a0a0a]">
-        {rating.toFixed(2)}
-      </span>
-    </div>
-  );
-}
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -111,7 +99,6 @@ export function StoreProductCard({
 }: ProductCardProps) {
   const [loading, setLoading] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isImageHovered, setIsImageHovered] = useState(false);
   const [failedImages, setFailedImages] = useState<string[]>([]);
   const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
   const { linesAdd } = useCart();
@@ -279,10 +266,6 @@ export function StoreProductCard({
       <Link
         href={`/products/${handle}`}
         className="block relative aspect-square w-full overflow-hidden bg-white"
-        onMouseEnter={() => setIsImageHovered(true)}
-        onMouseLeave={() => setIsImageHovered(false)}
-        onFocus={() => setIsImageHovered(true)}
-        onBlur={() => setIsImageHovered(false)}
       >
         {/* Current image — slides out to the left once a new image starts coming in */}
         <div

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FiEdit, FiStar, FiAward, FiFileText } from "react-icons/fi";
+import { FiStar, FiAward, FiFileText } from "react-icons/fi";
 
 const sections = [
   {

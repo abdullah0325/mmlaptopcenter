@@ -20,7 +20,6 @@ interface ProductReviewsSliderProps {
 export function ProductReviewsSlider({ productHandle }: ProductReviewsSliderProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

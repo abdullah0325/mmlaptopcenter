@@ -76,7 +76,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-   const [categories, featuredCollections, featuredBlogs, essenceSection, homeVideos] = await Promise.all([
+   const [categories, featuredCollections, featuredBlogs, homeVideos] = await Promise.all([
      safeHomeQuery(
        "categories",
        () => prisma.category.findMany({
@@ -112,13 +112,6 @@ export default async function Page() {
         select: { id: true, title: true, slug: true, excerpt: true, featuredImage: true, publishedAt: true, content: true },
       }),
       [],
-    ),
-    safeHomeQuery(
-      "essence section",
-      () => prisma.homepageSection.findUnique({
-        where: { sectionKey: "essence" },
-      }),
-      null,
     ),
     safeHomeQuery(
       "home videos",

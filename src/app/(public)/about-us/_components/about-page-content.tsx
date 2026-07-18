@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ShieldCheck,
-  Truck,
   Headphones,
   Sparkles,
   CheckCircle,

@@ -1,6 +1,12 @@
 import { StoreProductCard } from "@/components/features/products/store-product-card-wrapper";
-import { ProductReviews } from "@/components/features/products/product-reviews";
 import { titleize } from "@esmate/utils/string";
+import dynamic from "next/dynamic";
+
+const ProductReviews = dynamic(() =>
+  import("@/components/features/products/product-reviews").then(
+    (module) => module.ProductReviews,
+  ),
+);
 
 type RelatedProduct = {
   id: string;

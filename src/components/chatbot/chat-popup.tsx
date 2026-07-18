@@ -4,8 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { X } from "@esmate/shadcn/pkgs/lucide-react";
 import { MessageBubble } from "./message-bubble";
 import { ChatInput } from "./chat-input";
-import { useCart } from "@/lib/commerce";
-import { toast } from "sonner";
 
 type Msg = { role: "user" | "assistant"; content: string; html?: string };
 type DraftOrder = {
@@ -28,17 +26,6 @@ export function ChatPopup({ open, onClose }: { open: boolean; onClose: () => voi
   const [draftOrder, setDraftOrder] = useState<DraftOrder>({});
   const bottomRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
-  const { linesAdd } = useCart();
-
-  const addToCart = async (variantId: string, title: string, price: { amount: string; currencyCode: string }, imageUrl: string) => {
-    try {
-      await linesAdd([{ merchandiseId: variantId, quantity: 1, title, price, imageUrl }]);
-      toast.success("Added to cart", { description: title });
-    } catch {
-      toast.error("Failed to add to cart");
-    }
-  };
-
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
